@@ -1,0 +1,11 @@
+* Pass the ssh key to the server from pc:
+	1. First generate the ssh key from command prompt and the command is (ssh keygen).
+	2. Then open the C drive and open USERS forlder in the C drive and then tumpa and then .ssh folder.
+	3. Then open git bash and write a command ssh-copy-id -i id_rsa.pub masuk@192.168.1.39.
+
+* Configuration file code is:
+	
+	Host accelx_39
+    	HostName 192.168.1.39
+    	User masuk
+    	IdentityFile ~/.ssh/id_rsa
