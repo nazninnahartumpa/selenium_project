@@ -61,7 +61,8 @@ class ZapposSpider(scrapy.Spider):
             image = [link.get_attribute("href") for link in image_list]
             sku_list = self.driver.find_elements_by_xpath('//*[contains(text(), "SKU")]')
             sku_number = [sku.text for sku in sku_list]
-            review = self.driver.find_element_by_xpath('//*[@itemprop="reviewBody"]//div[@class="WP-z XP-z"]').text
+            review_list = self.driver.find_elements_by_xpath('//*[@itemprop="reviewBody"]//div[@class="WP-z XP-z"]')
+            review = [review.text for review in review_list]
             rating = self.driver.find_element_by_xpath('//div[@class="Li-z"]//span').get_attribute('data-star-rating')
             rating_count = self.driver.find_element_by_xpath('//*[@id="overview"]//span[@class="zP-z"][1]').text
 
