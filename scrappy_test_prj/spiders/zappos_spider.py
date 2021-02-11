@@ -40,9 +40,9 @@ class ZapposSpider(scrapy.Spider):
         #link_list = self.driver.find_element_by_xpath('//article[@class="ow-z dq-z"]//a//@href').extract()[:4]
         #print('url_list', url_list)
 
-        link_tag_list = self.driver.find_elements_by_xpath('//article[@class="ow-z dq-z"]//a')
+        link_tag_list = self.driver.find_elements_by_xpath('//article//a')
         url_list = [link.get_attribute("href") for link in link_tag_list[:4]]
-        #print('url_list', url_list)
+        print('url_list', url_list)
 
         # url_list = []
         # for link in link_list:
@@ -51,27 +51,53 @@ class ZapposSpider(scrapy.Spider):
         for single_url in url_list:
             self.driver.get(single_url)
             time.sleep(1)
+            print('single_url', single_url)
 
-            title = self.driver.find_element_by_xpath('//*[@id="overview"]//span[@class="nP-z"]').text
-            brand = self.driver.find_element_by_xpath('//span[@class="mP-z"]//a//span').text
-            description = self.driver.find_element_by_xpath('//div[@itemprop="description"]//ul//li').text
-            price_list = self.driver.find_elements_by_xpath('//*[@id="productRecap"]//aside[@class="dc-z"]//div[@class="GL-z"]//span[@class="JL-z"]')
-            price = [price.text for price in price_list]
-            image_list = self.driver.find_elements_by_xpath('//div[@class="jQ-z"]//ul//li//a')
-            image = [link.get_attribute("href") for link in image_list]
-            sku_list = self.driver.find_elements_by_xpath('//*[contains(text(), "SKU")]')
-            sku_number = [sku.text for sku in sku_list]
-            review_list = self.driver.find_elements_by_xpath('//*[@itemprop="reviewBody"]//div[@class="WP-z XP-z"]')
+            # scrape title 
+            title = self.driver.find_element_by_xpath('//*[@id="overview"]//h1//div//span[2]').text
+
+            # scrape brand 
+            brand = self.driver.find_element_by_xpath('//*[@id="overview"]//*[@itemprop="brand"]//span').text
+
+            # scrape descriptions
+            descriptions = self.driver.find_element_by_xpath('//div[@itemprop="description"]//ul').text
+
+            # scrape price 
+            price = self.driver.find_element_by_xpath('//aside//div//div//div//span').text
+
+            # scrape image
+            image_list = self.driver.find_elements_by_xpath('//*[@data-track-label="PrImage"]')
+            image = [link.get_attribute("src") for link in image_list]
+
+            # scrape store_product_id
+            store_product_id = self.driver.find_element_by_xpath('//*[contains(text(), "SKU")]').text
+
+            # scrape rating
+            rating = self.driver.find_element_by_xpath('//*[@id="overview"]//span//div[2]//a//span').get_attribute('data-star-rating')
+
+            # scrape rating_count
+            rating_count = self.driver.find_element_by_xpath('//*[@itemprop="reviewCount ratingCount"]').get_attribute('content')
+
+            # scrape review
+            review_list = self.driver.find_elements_by_xpath('//*[@itemprop="reviewBody"]//div')
             review = [review.text for review in review_list]
-            rating = self.driver.find_element_by_xpath('//div[@class="Li-z"]//span').get_attribute('data-star-rating')
-            rating_count = self.driver.find_element_by_xpath('//*[@id="overview"]//span[@class="zP-z"][1]').text
+
+            # scrape review
+            # try:
+            #     element = self.driver.find_element_by_xpath('//div[@data-test-id="reviewContainer"]//div[9]//a//span')
+            #     self.driver.execute_script("arguments[0].click();", element)
+            #     time.sleep(1)
+            #     review_list = self.driver.find_elements_by_xpath('//*[@itemprop="reviewBody"]//div')
+            #     review = [review.text for review in review_list]
+            # except:
+            #     pass
 
 
             print('title', title)
             print('brand', brand)
-            print('description', description)
+            print('descriptions', descriptions)
             print('price', price)
-            print('sku_number', sku_number)
+            print('store_product_id', store_product_id)
             print('image', image)
             print('rating', rating)
             print('review', review)

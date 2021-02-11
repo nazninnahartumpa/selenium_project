@@ -4,7 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-
 def configure_driver():
     # Add additional Options to the webdriver
     chrome_options = Options()
@@ -53,26 +52,42 @@ class NikeSpider(scrapy.Spider):
             except NoSuchElementException:
                 pass
 
+
+            try:
+                element = self.driver.find_element_by_xpath('//*[@id="RightRail"]//button//div[@class="ncss-col-sm-7 css-17y0hnb"]//h3[@class="css-nofngn"]')
+                # self.driver.execute_script("arguments[0].click();", element)
+                time.sleep(1)
+                rating_list = self.driver.find_elements_by_xpath('//*[@id="accordion-panel-3"]//div[@class="css-1e0k2gt"]//div[@class="reviews-component mb5-sm"]//div[@class="product-review mb10-sm"]//p[@class="d-sm-ib pl4-sm"]')
+                rating = [rating.text for rating in rating_list]
+                # print(rating)
+            except NoSuchElementException:
+                pass
+
             price = self.driver.find_element_by_xpath('//*[@id="PDP"]//div[@class="product-price is--current-price css-1emn094"]').text
 
             image_list = self.driver.find_elements_by_xpath('//*[@id="ColorwayDiv"]//img')
             image = [link.get_attribute("src") for link in image_list]
 
+            rating_count = self.driver.find_element_by_xpath('//*[@id="overview"]//span[@class="zP-z"][1]').text
+
             # review_list = self.driver.find_elements_by_xpath('//*[@itemprop="reviewBody"]//div[@class="WP-z XP-z"]')
-            try:
-                element = self.driver.find_element_by_xpath('//*[@id="RightRail"]//button//div[@class="ncss-col-sm-7 css-17y0hnb"]//h3[@class="css-nofngn"]')
-                self.driver.execute_script("arguments[0].click();", element)
-                time.sleep(1)
-                review_list = self.driver.find_element_by_xpath('//*[@id="accordion-panel-3"]//div[@class="reviews-component mb5-sm"]')
-                review = [link.text for link in review_list]
-            except NoSuchElementException:
-                pass
+            # try:
+            #     element2 = self.driver.find_element_by_xpath('//*[@id="RightRail"]//button//div[@class="ncss-col-sm-7 css-17y0hnb"]//h3[@class="css-nofngn"]')
+            #     self.driver.execute_script("arguments[0].click();", element2)
+            #     time.sleep(1)
+            #     # review_list = self.driver.find_element_by_xpath('//*[@id="accordion-panel-3"]//div[@class="reviews-component mb5-sm"]')
+            #     # review = [link.text for link in review_list]
+            # except NoSuchElementException:
+            #     pass
+
+            # ratings = self.driver.find_elements_by_xpath('//div[@id="accordion-panel-3"]//div[@class="product-review mb10-sm"]//p[@class="d-sm-ib pl4-sm"]')[0]
+            # ratings = [rating.text for rating in rating_list]
 
             # sku_list = self.driver.find_elements_by_xpath('//*[contains(text(), "SKU")]')
             # sku_number = [sku.text for sku in sku_list]
             # review_list = self.driver.find_elements_by_xpath('//*[@itemprop="reviewBody"]//div[@class="WP-z XP-z"]')
             # review = [review.text for review in review_list]
-            # rating = self.driver.find_element_by_xpath('//div[@class="Li-z"]//span').get_attribute('data-star-rating')
+            
             # rating_count = self.driver.find_element_by_xpath('//*[@id="overview"]//span[@class="zP-z"][1]').text
 
 
@@ -83,7 +98,7 @@ class NikeSpider(scrapy.Spider):
             # print('sku_number', sku_number)
             print('image', image)
             # print('rating', rating)
-            print('review', review)
+            # print('review', review)
             # print('rating_count', rating_count)
 
 
