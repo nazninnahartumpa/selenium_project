@@ -34,51 +34,47 @@ class NikeSpider(scrapy.Spider):
         url = response.url
         self.driver.get(url)
 
-        product_link_list = self.driver.find_elements_by_xpath('//div[@class="product-card__body"]//figure/a')
+        product_link_list = self.driver.find_elements_by_xpath('//figure//a[1]')
         url_list = [link.get_attribute("href") for link in product_link_list[:4]]
-        print('url_list', url_list)
+        # print('url_list', url_list)
         
         for single_url in url_list:
             self.driver.get(single_url)
             time.sleep(1)
 
-            title = self.driver.find_element_by_xpath('//h1[@id="pdp_product_title"]').text
+            # scrape title
+            title = self.driver.find_element_by_xpath('//*[@id="pdp_product_title"][1]').text
 
+            # scrape description
             try:
-                element = self.driver.find_element_by_xpath('//*[@id="RightRail"]//div[@class="pt6-sm prl6-sm prl0-lg"]//button//span')
+                element = self.driver.find_element_by_xpath('//*[contains(@class, "description-preview")]/following-sibling::button//span')
                 self.driver.execute_script("arguments[0].click();", element)
                 time.sleep(1)
                 description = self.driver.find_element_by_xpath('//*[@id="product-detail-modal"]//div[@class="pi-pdpmainbody"]').text
             except NoSuchElementException:
                 pass
 
+            # scrape price
+            price = self.driver.find_element_by_xpath('//*[@class="product-price__wrapper"]//div').text
 
-            try:
-                element = self.driver.find_element_by_xpath('//*[@id="RightRail"]//button//div[@class="ncss-col-sm-7 css-17y0hnb"]//h3[@class="css-nofngn"]')
-                # self.driver.execute_script("arguments[0].click();", element)
-                time.sleep(1)
-                rating_list = self.driver.find_elements_by_xpath('//*[@id="accordion-panel-3"]//div[@class="css-1e0k2gt"]//div[@class="reviews-component mb5-sm"]//div[@class="product-review mb10-sm"]//p[@class="d-sm-ib pl4-sm"]')
-                rating = [rating.text for rating in rating_list]
-                # print(rating)
-            except NoSuchElementException:
-                pass
-
-            price = self.driver.find_element_by_xpath('//*[@id="PDP"]//div[@class="product-price is--current-price css-1emn094"]').text
-
+            # scrape image
             image_list = self.driver.find_elements_by_xpath('//*[@id="ColorwayDiv"]//img')
             image = [link.get_attribute("src") for link in image_list]
 
-            rating_count = self.driver.find_element_by_xpath('//*[@id="overview"]//span[@class="zP-z"][1]').text
+            # scrape rating count
+            # rating_count_list = self.driver.find_elements_by_xpath('//*[@id="RightRail"]//button').get_attribute('aria-controls')
+            # rating_count = [rating_count.text for rating_count in rating_count_list]
 
-            # review_list = self.driver.find_elements_by_xpath('//*[@itemprop="reviewBody"]//div[@class="WP-z XP-z"]')
-            # try:
-            #     element2 = self.driver.find_element_by_xpath('//*[@id="RightRail"]//button//div[@class="ncss-col-sm-7 css-17y0hnb"]//h3[@class="css-nofngn"]')
-            #     self.driver.execute_script("arguments[0].click();", element2)
-            #     time.sleep(1)
-            #     # review_list = self.driver.find_element_by_xpath('//*[@id="accordion-panel-3"]//div[@class="reviews-component mb5-sm"]')
-            #     # review = [link.text for link in review_list]
-            # except NoSuchElementException:
-            #     pass
+            # scrape review
+            try:
+                element = self.driver.find_element_by_xpath('//*[@id="RightRail"]//button[@aria-controls="accordion-panel-3"]//div//h3')
+                self.driver.execute_script("arguments[0].click();", element)
+                time.sleep(1)
+                review_list = self.driver.find_elements_by_xpath('//*[@id="accordion-panel-3"]//div//div')
+                review = [review.text for review in review_list]
+                # print(rating)
+            except NoSuchElementException:
+                pass
 
             # ratings = self.driver.find_elements_by_xpath('//div[@id="accordion-panel-3"]//div[@class="product-review mb10-sm"]//p[@class="d-sm-ib pl4-sm"]')[0]
             # ratings = [rating.text for rating in rating_list]
@@ -97,9 +93,8 @@ class NikeSpider(scrapy.Spider):
             print('price', price)
             # print('sku_number', sku_number)
             print('image', image)
-            # print('rating', rating)
-            # print('review', review)
-            # print('rating_count', rating_count)
+            print('review', review)
+            print('rating_count', rating_count)
 
 
        
